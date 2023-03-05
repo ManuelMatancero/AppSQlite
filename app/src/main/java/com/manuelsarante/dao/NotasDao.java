@@ -17,16 +17,16 @@ public interface NotasDao {
     List<Notas> getAll();
 
     @Query("SELECT * FROM Notas WHERE id=:id")
-    Notas getNota(int id);
+    Notas getById(int id);
 
-    @Query("UPDATE Notas SET titulo= :titulo, descripcion= :descripcion, imagen = :imagen WHERE id=:id")
-    void updateNota(int id, String titulo, String descripcion, byte[] imagen);
+   @Update
+   void update(Notas nota);
 
     @Insert
-    void insertNota(Notas nota);
+    void insert(Notas nota);
 
     @Delete
-    void deleteNota(Notas nota);
+    void delete(Notas nota);
 
 
 }

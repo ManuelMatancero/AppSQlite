@@ -12,8 +12,8 @@ import com.manuelsarante.domain.Notas;
 @Database(entities = {Notas.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
-    public abstract NotasDao notasDao();
     public static AppDatabase INSTANCE;
+    public abstract NotasDao notasDao();
 
     public static AppDatabase getInstance(Context context){
         if(INSTANCE==null){
