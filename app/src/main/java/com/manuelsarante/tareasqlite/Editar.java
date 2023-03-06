@@ -1,20 +1,14 @@
 package com.manuelsarante.tareasqlite;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
+import android.icu.text.CaseMap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -28,22 +22,14 @@ import com.manuelsarante.dao.NotasDao;
 import com.manuelsarante.database.AppDatabase;
 import com.manuelsarante.domain.Notas;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
-import droidninja.filepicker.FilePickerBuilder;
-import droidninja.filepicker.FilePickerConst;
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
+public class Editar extends AppCompatActivity {
 
-public class Agregar extends AppCompatActivity {
-
+    Button guardar, cancelar;
     EditText titulo, desc;
-    Button  guardar, cancel;
-    ImageButton addImagen;
+    ImageButton addImage;
     ImageView imagen;
     Bitmap imageBitmap;
 
@@ -51,31 +37,42 @@ public class Agregar extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_agregar);
+        setContentView(R.layout.activity_editar);
 
-        addImagen = findViewById(R.id.addImagen);
-        imagen = findViewById(R.id.imagen);
-        guardar = findViewById(R.id.guardar);
-        cancel = findViewById(R.id.cancelar);
+        Intent intent = getIntent();
+        int id = intent.getIntExtra("id",0);
+
         titulo = findViewById(R.id.titulo);
         desc = findViewById(R.id.descripcion);
-        AppDatabase db = AppDatabase.getInstance(Agregar.this);
+        addImage = findViewById(R.id.addImagen);
+        imagen = findViewById(R.id.imagen);
+        guardar = findViewById(R.id.guardar);
+        cancelar = findViewById(R.id.cancelar);
+
+        AppDatabase db = AppDatabase.getInstance(getApplicationContext());
         NotasDao notasDao = db.notasDao();
 
-        addImagen.setOnClickListener(new View.OnClickListener() {
+        Notas notaSelected = notasDao.getById(id);
+
+        titulo.setText(notaSelected.getTitulo());
+        desc.setText(notaSelected.getDescripcion());
+        if(notaSelected.getImagen()==null){
+            imagen.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_error_24));
+        }else{
+            imagen.setImageBitmap(DataConverter.convertByteArrayToImage(notaSelected.getImagen()));
+        }
+
+        addImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(i , 3);
-
+                Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i , 3);
             }
         });
 
         guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Obteniendo la imagen desde el imageView
-
                 if(titulo.getText().toString().trim().equalsIgnoreCase("")){
                     titulo.setError("Este campo no puede estar vacio");
                 }else if(desc.getText().toString().trim().equalsIgnoreCase("")){
@@ -93,25 +90,29 @@ public class Agregar extends AppCompatActivity {
                     String des = desc.getText().toString();
 
                     //Creo el Objeto Notas y paso por parametro los valores
+                    //Creo el Objeto Notas y paso por parametro los valores
                     Notas nota = new Notas();
+                    nota.setId(id);
                     nota.setTitulo(ttl);
                     nota.setDescripcion(des);
                     nota.setImagen(DataConverter.convertImageToByteArray(imageBitmap));
 
-                    //Agrego el objeto a la base de datos
-                    notasDao.insert(nota);
+
+                    //Actualizo el registro en la base de datos
+                    notasDao.update(nota);
 
                     finish();
 
                 }
             }
         });
-        cancel.setOnClickListener(new View.OnClickListener() {
+        cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
 
     }
     @Override
@@ -120,7 +121,7 @@ public class Agregar extends AppCompatActivity {
         if(resultCode == RESULT_OK && data != null){
             Uri selectedImage = data.getData();
             try {
-                 imageBitmap = uriToBitmap(selectedImage);
+                imageBitmap = uriToBitmap(selectedImage);
             } catch (IOException e) {
                 e.printStackTrace();
             }
