@@ -7,6 +7,8 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.icu.text.CaseMap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -95,7 +97,9 @@ public class Editar extends AppCompatActivity {
                     nota.setId(id);
                     nota.setTitulo(ttl);
                     nota.setDescripcion(des);
-                    nota.setImagen(DataConverter.convertImageToByteArray(imageBitmap));
+                    Drawable drawable = imagen.getDrawable();
+                    Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+                    nota.setImagen(DataConverter.convertImageToByteArray(bitmap));
 
 
                     //Actualizo el registro en la base de datos

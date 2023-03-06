@@ -30,7 +30,7 @@
 
         <LinearLayout
             android:layout_width="150dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
@@ -42,14 +42,16 @@
                 android:fontFamily="@font/aladin"
                 android:textColor="@color/black"
                 android:textStyle="bold"/>
-
             <TextView
                 android:id="@+id/desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:fontFamily="@font/aladin"
-                android:textStyle="italic"/>
+                android:textStyle="italic"
+             />
+
+
         </LinearLayout>
 
         <LinearLayout
